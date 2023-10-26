@@ -1,0 +1,13 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+url_minimizer:
+    resource: App\Controller\UrlMinimizerController
+    type: annotation
+
+redirect_route:
+    path: '/redirect/{slug}'
+    controller: App\Controller\UrlMinimizerController::redirectToSlug

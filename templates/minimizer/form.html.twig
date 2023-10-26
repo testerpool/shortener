@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Мінімізатор URL</title>
+    <link href="{{ asset('build/css/bootstrap.min.css') }}" rel="stylesheet">
+</head>
+<body class="p-3">
+
+
+<div class="container">
+    <h1 class="mb-4">Мінімізатор URL</h1>
+
+    <form method="post">
+        <div class="mb-3">
+            <label for="url" class="form-label">URL:</label>
+            <input type="text" class="form-control" name="url" id="url" required>
+        </div>
+        <div class="mb-3">
+            <label for="lifetime" class="form-label">Час життя (години):</label>
+            <input type="number" class="form-control" name="lifetime" id="lifetime" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Зберегти</button>
+    </form>
+</div>
+
+<script src="{{ asset('build/app.js') }}"></script>
+
+</body>
+</html>
