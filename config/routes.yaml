@@ -11,3 +11,7 @@ url_minimizer:
 redirect_route:
     path: '/redirect/{slug}'
     controller: App\Controller\UrlMinimizerController::redirectToSlug
+
+info:
+    path: '/info/{slug}'
+    controller: App\Controller\UrlMinimizerController::info

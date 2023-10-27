@@ -2,14 +2,25 @@
 <html>
 <head>
     <title>Успішно</title>
+    <link href="{{ asset('build/css/bootstrap.min.css') }}" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
-<h1>Посилання успішно збережено:</h1>
+<div class="container mt-5">
+    <div class="text-center">
+        <h1>Посилання успішно збережено!</h1>
 
-{% if shortUrl %}
-    <a href="{{ shortUrl }}">{{ shortUrl }}</a>
-{% endif %}
+        {% if shortUrl %}
+            <p class="lead">Коротке посилання:</p>
+            <a href="{{ shortUrl }}" class="btn btn-primary mb-3">{{ shortUrl }}</a>
+        {% endif %}
+
+        {% if infoUrl %}
+            <p class="lead">Iнформація щодо посилання:</p>
+            <a href="{{ infoUrl }}" class="btn btn-secondary">{{ infoUrl }}</a>
+        {% endif %}
+    </div>
+</div>
 
 </body>
 </html>

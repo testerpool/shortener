@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Iнформація щодо посилання</title>
+    <link href="{{ asset('build/css/bootstrap.min.css') }}" rel="stylesheet">
+</head>
+<body class="p-3">
+
+<div class="container">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Оригінальне посилання</th>
+            <th scope="col">Коротке посилання</th>
+            <th scope="col">Кількість переходів</th>
+            <th scope="col">Термін дії</th>
+            <th scope="col">Дата створення</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{ url }}</td>
+            <td>{{ slug }}</td>
+            <td>{{ viewCount }}</td>
+            <td>{{ expiryDate }}</td>
+            <td>{{ createdAt }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

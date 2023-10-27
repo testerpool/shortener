@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class UrlMinimizerController extends AbstractController
@@ -33,6 +34,7 @@ class UrlMinimizerController extends AbstractController
             $serverName = $request->getHttpHost();
             return $this->render('minimizer/success.html.twig', [
                 'shortUrl' => "http://$serverName/redirect/{$urlMinimizer->getSlug()}",
+                'infoUrl' => "http://$serverName/info/{$urlMinimizer->getSlug()}",
             ]);
         }
 
@@ -62,5 +64,31 @@ class UrlMinimizerController extends AbstractController
         $urlMinimizerService->updateViewCount($urlMinimizer);
 
         return $this->redirect($urlMinimizer->getUrl());
+    }
+
+    /**
+     * @param $slug
+     *
+     * @return Response
+     */
+    public function info($slug): Response {
+        $urlMinimizer = $this->urlMinimizerRepository->findOneBy(['slug' => $slug]);
+
+        if (is_null($urlMinimizer)) {
+            throw new NotFoundHttpException('Iнформація не знайдена');
+        }
+        $createdAt = $urlMinimizer->getCreatedAt();
+        $formattedDateCreatedAt = $createdAt->format('Y-m-d H:i:s');
+
+        $expiryDate = $urlMinimizer->getExpiryDate();
+        $formattedDateExpiryDate = $expiryDate->format('Y-m-d H:i:s');
+
+        return $this->render('minimizer/info.html.twig', [
+            'slug' => $urlMinimizer->getSlug(),
+            'url' => $urlMinimizer->getUrl(),
+            'expiryDate' => $formattedDateExpiryDate,
+            'createdAt' => $formattedDateCreatedAt,
+            'viewCount' => $urlMinimizer->getViewCount(),
+        ]);
     }
 }
