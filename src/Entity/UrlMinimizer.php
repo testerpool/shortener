@@ -30,6 +30,9 @@ class UrlMinimizer
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $viewCount;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -85,6 +88,18 @@ class UrlMinimizer
     public function setCreatedAt(\DateTimeImmutable $created_at): static
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getViewCount(): ?int
+    {
+        return $this->viewCount;
+    }
+
+    public function setViewCount(int $viewCount): self
+    {
+        $this->viewCount = $viewCount;
 
         return $this;
     }

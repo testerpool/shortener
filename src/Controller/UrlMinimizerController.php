@@ -38,12 +38,13 @@ class UrlMinimizerController extends AbstractController
             $urlMinimizer->setExpiryDate($urlMinimizer->getDateTimeFromHours($lifetime));
             $currentDateTime = new DateTimeImmutable('now', new DateTimeZone('UTC'));
             $urlMinimizer->setCreatedAt($currentDateTime);
+            $urlMinimizer->setViewCount(0);
             $entityManager->persist($urlMinimizer);
             $entityManager->flush();
 
             $serverName = $request->getHttpHost();
             return $this->render('minimizer/success.html.twig', [
-                'shortUrl' => "http://$serverName/$shortCode",
+                'shortUrl' => "http://$serverName/redirect/$shortCode",
             ]);
         }
 
@@ -68,6 +69,11 @@ class UrlMinimizerController extends AbstractController
         if ($message !== '') {
             return $this->render('minimizer/redirect.html.twig', ['message' => $message]);
         }
+
+        $entityManager = $this->entityManager;
+        $urlMinimizer->setViewCount($urlMinimizer->getViewCount() + 1);
+        $entityManager->persist($urlMinimizer);
+        $entityManager->flush();
 
         return $this->redirect($urlMinimizer->getUrl());
     }
