@@ -21,28 +21,33 @@ class UrlMinimizerRepository extends ServiceEntityRepository
         parent::__construct($registry, UrlMinimizer::class);
     }
 
-//    /**
-//     * @return UrlMinimizer[] Returns an array of UrlMinimizer objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('u.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function save(UrlMinimizer $urlMinimizer): void
+    {
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($urlMinimizer);
+        $entityManager->flush();
+    }
 
-//    public function findOneBySomeField($value): ?UrlMinimizer
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * @return UrlMinimizer[] Returns an array of UrlMinimizer objects
+     */
+    public function findByExampleField($value): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.exampleField = :val')
+            ->setParameter('val', $value)
+            ->orderBy('u.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findOneBySomeField($value): ?UrlMinimizer
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.exampleField = :val')
+            ->setParameter('val', $value)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

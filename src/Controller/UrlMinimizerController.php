@@ -2,10 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\UrlMinimizer;
-use DateTimeImmutable;
-use DateTimeZone;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\UrlMinimizerRepository;
+use App\Service\UrlMinimizerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,37 +12,27 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UrlMinimizerController extends AbstractController
 {
-    private $entityManager;
+    private UrlMinimizerRepository $urlMinimizerRepository;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(UrlMinimizerRepository $urlMinimizerRepository)
     {
-        $this->entityManager = $entityManager;
+        $this->urlMinimizerRepository = $urlMinimizerRepository;
     }
 
     #[Route('/minimize')]
-    public function minimizeUrl(Request $request): Response
+    public function minimizeUrl(Request $request, UrlMinimizerService $urlMinimizerService): Response
     {
         if ($request->isMethod('POST')) {
             $url = $request->request->get('url');
             $lifetime = $request->request->get('lifetime');
 
-            $entityManager = $this->entityManager;
+            $urlMinimizer = $urlMinimizerService->generateUrlMinimizer($url, $lifetime);
 
-            $urlMinimizer = new UrlMinimizer();
-            $urlMinimizer->setUrl($url);
-
-            $shortCode = $urlMinimizer->generateShortCode();
-            $urlMinimizer->setSlug($shortCode);
-            $urlMinimizer->setExpiryDate($urlMinimizer->getDateTimeFromHours($lifetime));
-            $currentDateTime = new DateTimeImmutable('now', new DateTimeZone('UTC'));
-            $urlMinimizer->setCreatedAt($currentDateTime);
-            $urlMinimizer->setViewCount(0);
-            $entityManager->persist($urlMinimizer);
-            $entityManager->flush();
+            $this->urlMinimizerRepository->save($urlMinimizer);
 
             $serverName = $request->getHttpHost();
             return $this->render('minimizer/success.html.twig', [
-                'shortUrl' => "http://$serverName/redirect/$shortCode",
+                'shortUrl' => "http://$serverName/redirect/{$urlMinimizer->getSlug()}",
             ]);
         }
 
@@ -52,12 +40,13 @@ class UrlMinimizerController extends AbstractController
     }
 
     /**
-     * @param $slug
+     * @param                     $slug
+     * @param UrlMinimizerService $urlMinimizerService
      *
      * @return RedirectResponse|Response
      */
-    public function redirectToSlug($slug): RedirectResponse|Response {
-        $urlMinimizer = $this->entityManager->getRepository(UrlMinimizer::class)->findOneBy(['slug' => $slug]);
+    public function redirectToSlug($slug, UrlMinimizerService $urlMinimizerService): RedirectResponse|Response {
+        $urlMinimizer = $this->urlMinimizerRepository->findOneBy(['slug' => $slug]);
 
         $message = '';
         if (!$urlMinimizer) {
@@ -70,10 +59,7 @@ class UrlMinimizerController extends AbstractController
             return $this->render('minimizer/redirect.html.twig', ['message' => $message]);
         }
 
-        $entityManager = $this->entityManager;
-        $urlMinimizer->setViewCount($urlMinimizer->getViewCount() + 1);
-        $entityManager->persist($urlMinimizer);
-        $entityManager->flush();
+        $urlMinimizerService->updateViewCount($urlMinimizer);
 
         return $this->redirect($urlMinimizer->getUrl());
     }
